@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Pointer<T> {
@@ -56,7 +57,7 @@ class _App extends State<AppLayout> {
     if (_selectedPage == Page.analytics) {
       return const AnalyticsPage();
     } else {
-      return const AnalyticsPage();
+      return Positioned.fill(child: Stack());
     }
   }
   
@@ -74,28 +75,52 @@ class _App extends State<AppLayout> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: SizedBox(
-                  child: Image(image: AssetImage('assets/chart.png')),
+                  child: Image(image: AssetImage('assets/analytics.png')),
                   width: 100,
                   height: 100),
-              label: ""),
+              label: "",
+              activeIcon: SizedBox(
+                  child: Image(image: AssetImage('assets/community_selected.png')),
+                  width: 100,
+                  height: 100
+              )
+          ),
           BottomNavigationBarItem(
               icon: SizedBox(
                   child: Image(image: AssetImage('assets/add.png')),
                   width: 100,
                   height: 100),
-              label: ""),
+              label: "",
+              activeIcon: SizedBox(
+                  child: Image(image: AssetImage('assets/add_selected.png')),
+                  width: 100,
+                  height: 100
+              )
+          ),
           BottomNavigationBarItem(
               icon: SizedBox(
                   child: Image(image: AssetImage('assets/community.png')),
                   width: 100,
                   height: 100),
-              label: ""),
+              label: "",
+              activeIcon: SizedBox(
+                child: Image(image: AssetImage('assets/community_selected.png')),
+                width: 100,
+                height: 100
+              )
+          ),
           BottomNavigationBarItem(
               icon: SizedBox(
                   child: Image(image: AssetImage('assets/settings.png')),
                   width: 100,
                   height: 100),
-              label: ""),
+              label: "",
+              activeIcon: SizedBox(
+                  child: Image(image: AssetImage('assets/settings_selected.png')),
+                  width: 100,
+                  height: 100
+              )
+          ),
         ],
         currentIndex: _selectedPage.index,
         onTap: _onItemTapped,
