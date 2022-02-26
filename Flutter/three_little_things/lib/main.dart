@@ -1,6 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+
+class Pointer<T> {
+  T value;
+  Pointer(this.value);
+}
 
 void main() {
   runApp(const MyApp());
@@ -41,7 +44,7 @@ class AppLayout extends StatefulWidget {
 }
 
 class _App extends State<AppLayout> {
-  Page _selectedPage = Page.community;
+  Page _selectedPage = Page.analytics;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -49,6 +52,14 @@ class _App extends State<AppLayout> {
     });
   }
 
+  Widget getPage() {
+    if (_selectedPage == Page.analytics) {
+      return const AnalyticsPage();
+    } else {
+      return const AnalyticsPage();
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +69,7 @@ class _App extends State<AppLayout> {
               image: DecorationImage(
                   image: AssetImage("assets/background.png"),
                   fit: BoxFit.fill)),
-          child: const ChartPage()),
+          child: Stack(children: [ getPage() ])),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -94,9 +105,18 @@ class _App extends State<AppLayout> {
   }
 }
 
-class ChartPage extends StatelessWidget {
-  const ChartPage({Key? key}) : super(key: key);
+class AnalyticsPage extends StatefulWidget {
+  const AnalyticsPage({Key? key}) : super(key: key);
 
+  @override
+  State<StatefulWidget> createState() => _ChartPage();
+}
+
+enum ChartDisplayDuration { week, month, year, life }
+
+class _ChartPage extends State<AnalyticsPage> {  
+  ChartDisplayDuration _displayTime = ChartDisplayDuration.week;
+  
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
@@ -107,16 +127,33 @@ class ChartPage extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               DropdownButton(
-                  value: "week",
+                  value: _displayTime.name,
                   style: const TextStyle(fontSize: 24, color: Colors.black),
-                  items: <String>['week', 'month', 'year', 'life']
+                  items: ChartDisplayDuration.values.map((e) => e.name)
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
                     );
                   }).toList(),
-                  onChanged: (String? val) {})
+                  onChanged: (Object? val) {
+                    setState(() {
+                      switch (val) {
+                        case "week":
+                          _displayTime = ChartDisplayDuration.week;
+                          break;
+                        case "month":
+                          _displayTime = ChartDisplayDuration.month;
+                          break;
+                        case "year":
+                          _displayTime = ChartDisplayDuration.year;
+                          break;
+                        case "life":
+                          _displayTime = ChartDisplayDuration.life;
+                          break;
+                      }
+                    });
+                  })
             ])));
   }
 }
