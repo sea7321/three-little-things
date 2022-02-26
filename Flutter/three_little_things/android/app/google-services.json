@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "312349347082",
+    "project_id": "three-little-things",
+    "storage_bucket": "three-little-things.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:312349347082:android:64aa85e7c5eed166ba7ef3",
+        "android_client_info": {
+          "package_name": "com.wichacks.threethings"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "312349347082-f47cgm4mboj9p3mpgeubo6kj4t4huft5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wichacks.threethings",
+            "certificate_hash": "eaa9c1bb3e2c95f4edaeb811cfe0a4d9f2ba7da4"
+          }
+        },
+        {
+          "client_id": "312349347082-qqq10ro7igt1ivrld62rp79rt6lvljnr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPcbWdsQ8Le5F2keute6th4cbzqk7P08s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "312349347082-qqq10ro7igt1ivrld62rp79rt6lvljnr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
