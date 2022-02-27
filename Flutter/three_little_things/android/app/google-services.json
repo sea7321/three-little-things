@@ -9,16 +9,16 @@
       "client_info": {
         "mobilesdk_app_id": "1:312349347082:android:64aa85e7c5eed166ba7ef3",
         "android_client_info": {
-          "package_name": "com.wichacks.threethings.three_little_things"
+          "package_name": "com.wichacks.threethings"
         }
       },
       "oauth_client": [
         {
-          "client_id": "312349347082-f47cgm4mboj9p3mpgeubo6kj4t4huft5.apps.googleusercontent.com",
+          "client_id": "312349347082-smb87nieojhkldf2ajbkimkai7hcj32t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.wichacks.threethings",
-            "certificate_hash": "eaa9c1bb3e2c95f4edaeb811cfe0a4d9f2ba7da4"
+            "certificate_hash": "bffd6260f72755f4901948f715e9236240014035"
           }
         },
         {
