@@ -13,28 +13,33 @@ class FirebaseData {
 class DayThoughts {
   String userId;
   List<String> tags;
-
-  DayThoughts(this.userId, this.tags);
-
-  DayThoughts.fromJson(Map<String, Object?> json)
-      : this(json['userId']! as String, json['tags']! as List<String>);
-
+  
+  DayThoughts(this.userId, this.tags);  
+  
+  DayThoughts.fromJson(Map<String, Object?> json) : this(
+    json['userId']! as String,
+    json['tags']! as List<String>
+  );
+  
   Map<String, Object?> toJson() {
-    return {'userId': userId, 'tags': tags};
+    return {
+      'userId': userId,
+      'tags': tags
+    };
   }
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-      options: const FirebaseOptions(
-          apiKey: "AIzaSyCqCZ4hj54UALwigomO-6LKJ4kS8ZxNuAg",
-          authDomain: "three-little-things.firebaseapp.com",
-          projectId: "three-little-things",
-          storageBucket: "three-little-things.appspot.com",
-          messagingSenderId: "312349347082",
-          appId: "1:312349347082:web:32f6eb7768dc2528ba7ef3",
-          measurementId: "G-W5FHGWVEC5"));
+  await Firebase.initializeApp(options: const FirebaseOptions(
+    apiKey: "AIzaSyCqCZ4hj54UALwigomO-6LKJ4kS8ZxNuAg",
+    authDomain: "three-little-things.firebaseapp.com",
+    projectId: "three-little-things",
+    storageBucket: "three-little-things.appspot.com",
+    messagingSenderId: "312349347082",
+    appId: "1:312349347082:web:32f6eb7768dc2528ba7ef3",
+    measurementId: "G-W5FHGWVEC5"
+  ));
   runApp(const MyApp());
 }
 
@@ -86,7 +91,11 @@ class _App extends State<AppLayout> {
       return const AnalyticsPage();
     } else if (_selectedPage == Page.addEntry) {
       return const AddEntryPage();
-    } else {
+    } else if (_selectedPage == Page.community) {
+      return const AddCommunityPage();
+    } else if (_selectedPage == Page.settings) {
+      return const AddSettingsPage();
+    }else {
       return Positioned.fill(child: Stack());
     }
   }
@@ -284,23 +293,21 @@ class _AddCommunityPage extends State<AddCommunityPage> {
   Widget build(BuildContext context) {
     return Positioned.fill(
         child: Align(
-      alignment: Alignment.topCenter,
-      child: Column(
-        children: [
-          const Text("Welcome to the Community Page",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          const TextField(),
-          Container(
-            padding: const EdgeInsets.only(top: 75, left: 25, right: 25),
-            decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage("assets/background.png"),
-                    fit: BoxFit.fill)),
-          ),
-        ],
-      ),
-    ));
+            alignment: Alignment.topCenter,
+            child: Column(children: [
+              const Text("Welcome to the Community Page",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              SizedBox(child:
+              Container(
+                decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage("assets/settings_page.png"),
+                        fit: BoxFit.fill)),
+              ), width:350, height:450)],
+            )
+        )
+    );
   }
 }
 
@@ -313,27 +320,26 @@ class AddSettingsPage extends StatefulWidget {
 }
 
 class _AddSettingsPage extends State<AddSettingsPage> {
+
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
         child: Align(
-      alignment: Alignment.topCenter,
-      child: Column(
-        children: [
-          const Text("Settings",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          const TextField(),
-          Container(
-            padding: const EdgeInsets.only(top: 75, left: 25, right: 25),
-            decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage("assets/settings_page.png"),
-                    fit: BoxFit.fill)),
-          ),
-        ],
-      ),
-    ));
+          alignment: Alignment.topCenter,
+          child: Column(children: [
+            const Text("Settings",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            SizedBox(child:
+              Container(
+                decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage("assets/settings_page.png"),
+                        fit: BoxFit.fill)),
+              ), width:350, height:450)],
+            )
+        )
+    );
   }
 }
 
