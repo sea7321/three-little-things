@@ -89,10 +89,13 @@ class _App extends State<AppLayout> {
   Widget getPage() {
     if (_selectedPage == Page.analytics) {
       return const AnalyticsPage();
-    }
-    else if (_selectedPage == Page.addEntry) {
+    } else if (_selectedPage == Page.addEntry) {
       return const AddEntryPage();
-    } else {
+    } else if (_selectedPage == Page.community) {
+      return const AddCommunityPage();
+    } else if (_selectedPage == Page.settings) {
+      return const AddSettingsPage();
+    }else {
       return Positioned.fill(child: Stack());
     }
   }
@@ -277,14 +280,14 @@ class _AddCommunityPage extends State<AddCommunityPage> {
               const Text("Welcome to the Community Page",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              const TextField(),
+              SizedBox(child:
               Container(
-                  padding: const EdgeInsets.only(top: 75, left: 25, right: 25),
-                  decoration: const BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage("assets/background.png"),
-                          fit: BoxFit.fill)),
-              ),],),
+                decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage("assets/settings_page.png"),
+                        fit: BoxFit.fill)),
+              ), width:350, height:450)],
+            )
         )
     );
   }
@@ -309,14 +312,14 @@ class _AddSettingsPage extends State<AddSettingsPage> {
             const Text("Settings",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            const TextField(),
-            Container(
-              padding: const EdgeInsets.only(top: 75, left: 25, right: 25),
-              decoration: const BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage("assets/settings_page.png"),
-                      fit: BoxFit.fill)),
-            ),],),
+            SizedBox(child:
+              Container(
+                decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage("assets/settings_page.png"),
+                        fit: BoxFit.fill)),
+              ), width:350, height:450)],
+            )
         )
     );
   }
