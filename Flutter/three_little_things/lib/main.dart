@@ -70,8 +70,9 @@ class FirstRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: getData(),
-        builder: (context, data) {
+        // future: getData(),
+        future: Firebase.initializeApp(),
+    builder: (context, data) {
           if (data.hasError) {
             return Stack();
           }
@@ -264,7 +265,81 @@ class _AddEntryPage extends State<AddEntryPage> {
               Text("What made you happy today?",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              TextField()])
+              TextField(),
+              TextField(),
+              TextField(),
+              Text("What did you accomplish today?",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              TextField(),
+              TextField(),
+              TextField(),
+            ]
+            )
+        )
+    );
+  }
+}
+
+// COMMUNITY PAGE
+class AddCommunityPage extends StatefulWidget {
+  const AddCommunityPage({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _AddCommunityPage();
+}
+
+class _AddCommunityPage extends State<AddCommunityPage> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+        child: Align(
+            alignment: Alignment.topCenter,
+            child: Column(children: [
+              const Text("Welcome to the Community Page",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              const TextField(),
+              Container(
+                  padding: const EdgeInsets.only(top: 75, left: 25, right: 25),
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/background.png"),
+                          fit: BoxFit.fill)),
+              ),],),
+        )
+    );
+  }
+}
+
+// SETTINGS PAGE
+class AddSettingsPage extends StatefulWidget {
+  const AddSettingsPage({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _AddSettingsPage();
+}
+
+class _AddSettingsPage extends State<AddSettingsPage> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Column(children: [
+            const Text("Settings",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const TextField(),
+            Container(
+              padding: const EdgeInsets.only(top: 75, left: 25, right: 25),
+              decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage("assets/settings_page.png"),
+                      fit: BoxFit.fill)),
+            ),],),
         )
     );
   }
