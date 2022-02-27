@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseData {
   CollectionReference<Map<String, dynamic>> thoughtCollection;
@@ -42,7 +40,7 @@ class FirstRoute extends StatelessWidget {
   const FirstRoute({Key? key}) : super(key: key);
   
   Future<FirebaseData> getData() async {
-    await Firebase.initializeApp(options: FirebaseOptions(
+    await Firebase.initializeApp(options: const FirebaseOptions(
       apiKey: "AIzaSyCqCZ4hj54UALwigomO-6LKJ4kS8ZxNuAg",
       authDomain: "three-little-things.firebaseapp.com",
       projectId: "three-little-things",
