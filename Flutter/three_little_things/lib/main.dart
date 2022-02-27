@@ -15,19 +15,24 @@ class FirebaseData {
 
 class DayThoughts {
   String userId;
-  List<String> tags;
-  
-  DayThoughts(this.userId, this.tags);  
-  
-  DayThoughts.fromJson(Map<String, Object?> json) : this(
-    json['userId']! as String,
-    json['tags']! as List<String>
-  );
-  
+  List<String> accomplishments;
+  DateTime createdTime;
+
+  DayThoughts(this.userId, this.accomplishments, this.createdTime);
+
+  DayThoughts.fromJson(Map<String, Object?> json)
+      : this(
+            json['userId']! as String,
+            (json['accomplishments']! as List<dynamic>)
+                .map((e) => e as String)
+                .toList(),
+            (json['createdTime']! as Timestamp).toDate());
+
   Map<String, Object?> toJson() {
     return {
       'userId': userId,
-      'tags': tags
+      'accomplishments': accomplishments,
+      'createdTime': createdTime
     };
   }
 }
@@ -35,16 +40,16 @@ class DayThoughts {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
-    await Firebase.initializeApp(options: const FirebaseOptions(
-        apiKey: "AIzaSyCqCZ4hj54UALwigomO-6LKJ4kS8ZxNuAg",
-        authDomain: "three-little-things.firebaseapp.com",
-        projectId: "three-little-things",
-        storageBucket: "three-little-things.appspot.com",
-        messagingSenderId: "312349347082",
-        appId: "1:312349347082:web:32f6eb7768dc2528ba7ef3",
-        measurementId: "G-W5FHGWVEC5"
-    ));
-  } else if (Platform.isAndroid) {
+    await Firebase.initializeApp(
+        options: const FirebaseOptions(
+            apiKey: "AIzaSyCqCZ4hj54UALwigomO-6LKJ4kS8ZxNuAg",
+            authDomain: "three-little-things.firebaseapp.com",
+            projectId: "three-little-things",
+            storageBucket: "three-little-things.appspot.com",
+            messagingSenderId: "312349347082",
+            appId: "1:312349347082:web:32f6eb7768dc2528ba7ef3",
+            measurementId: "G-W5FHGWVEC5"));
+  } else {
     await Firebase.initializeApp();
   }
   runApp(const MyApp());
@@ -102,7 +107,7 @@ class _App extends State<AppLayout> {
       return const AddCommunityPage();
     } else if (_selectedPage == Page.settings) {
       return const AddSettingsPage();
-    }else {
+    } else {
       return Positioned.fill(child: Stack());
     }
   }
@@ -183,7 +188,7 @@ enum ChartDisplayDuration { week, month, year, life }
 
 class _AnalyticsPage extends State<AnalyticsPage> {
   ChartDisplayDuration _displayTime = ChartDisplayDuration.week;
-  final Map<String, double> _tagsOccurrences = {};
+  Map<String, double> _tagsOccurrences = {};
 
   Future<void> updateTagsOccurrences() async {
     CollectionReference thoughts =
@@ -197,7 +202,8 @@ class _AnalyticsPage extends State<AnalyticsPage> {
         .then((value) => value.docs);
     for (var doc in docs) {
       DayThoughts dayThoughts = doc.data();
-      for (var thought in dayThoughts.tags) {
+      _tagsOccurrences = {};
+      for (var thought in dayThoughts.accomplishments) {
         if (_tagsOccurrences.containsKey(thought)) {
           _tagsOccurrences.update(thought, (value) => value + 1);
         } else {
@@ -250,7 +256,23 @@ class _AnalyticsPage extends State<AnalyticsPage> {
                             }
                           });
                         }),
-                    _tagsOccurrences.isEmpty ? const SizedBox() : PieChart(dataMap: _tagsOccurrences)
+                    const SizedBox(height: 30),
+                    _tagsOccurrences.isEmpty
+                        ? const SizedBox()
+                        : PieChart(
+                            dataMap: _tagsOccurrences,
+                            colorList: const [
+                              Color(0xff236d5e),
+                              Color(0xff8eb699),
+                              Color(0xffdfc3a7),
+                              Color(0xffe3e6d4),
+                              Color(0xffedb8d5),
+                              Color(0xfff4b288)
+                            ],
+                            legendOptions: const LegendOptions(
+                                legendPosition: LegendPosition.bottom,
+                                showLegendsInRow: true),
+                          )
                   ])));
         });
   }
@@ -277,6 +299,7 @@ class _AddEntryPage extends State<AddEntryPage> {
               TextField(),
               TextField(),
               TextField(),
+              SizedBox(height: 100),
               Text("What did you accomplish today?",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
@@ -301,20 +324,23 @@ class _AddCommunityPage extends State<AddCommunityPage> {
     return Positioned.fill(
         child: Align(
             alignment: Alignment.topCenter,
-            child: Column(children: [
-              const Text("Welcome to the Community Page",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              SizedBox(child:
-              Container(
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/community_page.png"),
-                        fit: BoxFit.fill)),
-              ), width:350, height:450)],
-            )
-        )
-    );
+            child: Column(
+              children: [
+                const Text("Welcome to the Community Page",
+                    textAlign: TextAlign.center,
+                    style:
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                SizedBox(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage("assets/community_page.png"),
+                              fit: BoxFit.fill)),
+                    ),
+                    width: 350,
+                    height: 550)
+              ],
+            )));
   }
 }
 
@@ -327,47 +353,27 @@ class AddSettingsPage extends StatefulWidget {
 }
 
 class _AddSettingsPage extends State<AddSettingsPage> {
-
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
         child: Align(
-          alignment: Alignment.topCenter,
-          child: Column(children: [
-            const Text("Settings",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            SizedBox(child:
-              Container(
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/settings_page.png"),
-                        fit: BoxFit.fill)),
-              ), width:350, height:450)],
-            )
-        )
-    );
+            alignment: Alignment.topCenter,
+            child: Column(
+              children: [
+                const Text("Settings",
+                    textAlign: TextAlign.center,
+                    style:
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                SizedBox(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage("assets/settings_page.png"),
+                              fit: BoxFit.fill)),
+                    ),
+                    width: 350,
+                    height: 450)
+              ],
+            )));
   }
 }
-
-// class _AddEntryPage extends State<AnalyticsPage> {
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Positioned.fill(
-//         child: Align(
-//           alignment: Alignment.topCenter,
-//           child: Column(children: [
-//             const Text("What made you happy today?",
-//             textAlign: TextAlign.center,
-//             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-//           TextField(
-//             decoration:null
-//           )
-//           ])
-//
-//     )
-//     }
-//
-//   )
-// }
