@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -33,7 +34,7 @@ class DayThoughts {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (!Platform.isAndroid) {
+  if (kIsWeb) {
     await Firebase.initializeApp(options: const FirebaseOptions(
         apiKey: "AIzaSyCqCZ4hj54UALwigomO-6LKJ4kS8ZxNuAg",
         authDomain: "three-little-things.firebaseapp.com",
@@ -43,7 +44,7 @@ void main() async {
         appId: "1:312349347082:web:32f6eb7768dc2528ba7ef3",
         measurementId: "G-W5FHGWVEC5"
     ));
-  } else {
+  } else if (Platform.isAndroid) {
     await Firebase.initializeApp();
   }
   runApp(const MyApp());
