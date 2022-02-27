@@ -240,19 +240,6 @@ class _AnalyticsPage extends State<AnalyticsPage> {
   }
 }
 
-class Chart extends StatelessWidget {
-  Map<String, double> _tagsOccurrences;
-  
-  Chart(this._tagsOccurrences, {Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return PieChart(
-        dataMap: _tagsOccurrences
-    );
-  }
-}
-
 // ADD ENTRY PAGE
 class AddEntryPage extends StatefulWidget {
   const AddEntryPage({Key? key}) : super(key: key);
