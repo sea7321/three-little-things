@@ -21,7 +21,9 @@ Built using Flutter as the frontend for our Android application and Firebase as 
 
 ## What We Learned
 - Initial setup can be difficult, so start early
+- Preparation is important
 
 ## What's Next for Three Little Things
 - Upgrade for community tab (chatbot, mentors, etc.)
 - Add task manager/todo list features
+- Add journaling features
