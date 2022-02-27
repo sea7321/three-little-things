@@ -308,7 +308,7 @@ class _AddCommunityPage extends State<AddCommunityPage> {
               Container(
                 decoration: const BoxDecoration(
                     image: DecorationImage(
-                        image: AssetImage("assets/settings_page.png"),
+                        image: AssetImage("assets/community_page.png"),
                         fit: BoxFit.fill)),
               ), width:350, height:450)],
             )
