@@ -7,7 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 class FirebaseData {
   CollectionReference<Map<String, dynamic>> thoughtCollection;
   String uuid;
-  
+
   FirebaseData(this.thoughtCollection, this.uuid);
 }
 
@@ -118,6 +118,9 @@ class _App extends State<AppLayout> {
   Widget getPage() {
     if (_selectedPage == Page.analytics) {
       return const AnalyticsPage();
+    }
+    else if (_selectedPage == Page.addEntry) {
+      return const AddEntryPage();
     } else {
       return Positioned.fill(child: Stack());
     }
@@ -187,6 +190,7 @@ class _App extends State<AppLayout> {
   }
 }
 
+// ANALYTICS PAGE
 class AnalyticsPage extends StatefulWidget {
   const AnalyticsPage({Key? key}) : super(key: key);
 
@@ -240,3 +244,50 @@ class _AnalyticsPage extends State<AnalyticsPage> {
             ])));
   }
 }
+
+// ADD ENTRY PAGE
+class AddEntryPage extends StatefulWidget {
+  const AddEntryPage({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _AddEntryPage();
+}
+
+class _AddEntryPage extends State<AddEntryPage> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+        child: Align(
+            alignment: Alignment.topCenter,
+            child: Column(children: const [
+              Text("What made you happy today?",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              TextField()])
+        )
+    );
+  }
+}
+
+// class _AddEntryPage extends State<AnalyticsPage> {
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Positioned.fill(
+//         child: Align(
+//           alignment: Alignment.topCenter,
+//           child: Column(children: [
+//             const Text("What made you happy today?",
+//             textAlign: TextAlign.center,
+//             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+//           TextField(
+//             decoration:null
+//           )
+//           ])
+//
+//     )
+//     }
+//
+//   )
+// }
