@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 class FirebaseData {
   CollectionReference<Map<String, dynamic>> thoughtCollection;
@@ -12,33 +13,28 @@ class FirebaseData {
 class DayThoughts {
   String userId;
   List<String> tags;
-  
-  DayThoughts(this.userId, this.tags);  
-  
-  DayThoughts.fromJson(Map<String, Object?> json) : this(
-    json['userId']! as String,
-    json['tags']! as List<String>
-  );
-  
+
+  DayThoughts(this.userId, this.tags);
+
+  DayThoughts.fromJson(Map<String, Object?> json)
+      : this(json['userId']! as String, json['tags']! as List<String>);
+
   Map<String, Object?> toJson() {
-    return {
-      'userId': userId,
-      'tags': tags
-    };
+    return {'userId': userId, 'tags': tags};
   }
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: const FirebaseOptions(
-    apiKey: "AIzaSyCqCZ4hj54UALwigomO-6LKJ4kS8ZxNuAg",
-    authDomain: "three-little-things.firebaseapp.com",
-    projectId: "three-little-things",
-    storageBucket: "three-little-things.appspot.com",
-    messagingSenderId: "312349347082",
-    appId: "1:312349347082:web:32f6eb7768dc2528ba7ef3",
-    measurementId: "G-W5FHGWVEC5"
-  ));
+  await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          apiKey: "AIzaSyCqCZ4hj54UALwigomO-6LKJ4kS8ZxNuAg",
+          authDomain: "three-little-things.firebaseapp.com",
+          projectId: "three-little-things",
+          storageBucket: "three-little-things.appspot.com",
+          messagingSenderId: "312349347082",
+          appId: "1:312349347082:web:32f6eb7768dc2528ba7ef3",
+          measurementId: "G-W5FHGWVEC5"));
   runApp(const MyApp());
 }
 
@@ -70,7 +66,6 @@ class MyApp extends StatelessWidget {
 enum Page { analytics, addEntry, community, settings }
 
 class AppLayout extends StatefulWidget {
-  
   const AppLayout({Key? key}) : super(key: key);
 
   @override
@@ -89,8 +84,7 @@ class _App extends State<AppLayout> {
   Widget getPage() {
     if (_selectedPage == Page.analytics) {
       return const AnalyticsPage();
-    }
-    else if (_selectedPage == Page.addEntry) {
+    } else if (_selectedPage == Page.addEntry) {
       return const AddEntryPage();
     } else {
       return Positioned.fill(child: Stack());
@@ -163,7 +157,6 @@ class _App extends State<AppLayout> {
 
 // ANALYTICS PAGE
 class AnalyticsPage extends StatefulWidget {
-  
   const AnalyticsPage({Key? key}) : super(key: key);
 
   @override
@@ -174,52 +167,89 @@ enum ChartDisplayDuration { week, month, year, life }
 
 class _AnalyticsPage extends State<AnalyticsPage> {
   ChartDisplayDuration _displayTime = ChartDisplayDuration.week;
-  final Map<String, int> _tagsOccurrences = {};
+  final Map<String, double> _tagsOccurrences = {};
+
+  Future<void> updateTagsOccurrences() async {
+    CollectionReference thoughts =
+        FirebaseFirestore.instance.collection("thoughts");
+    var thoughtsRef = thoughts.withConverter<DayThoughts>(
+        fromFirestore: (snapshot, _) => DayThoughts.fromJson(snapshot.data()!),
+        toFirestore: (thoughts, _) => thoughts.toJson());
+    List<QueryDocumentSnapshot<DayThoughts>> docs = await thoughtsRef
+        .where('userId', isEqualTo: 'test')
+        .get()
+        .then((value) => value.docs);
+    for (var doc in docs) {
+      DayThoughts dayThoughts = doc.data();
+      for (var thought in dayThoughts.tags) {
+        if (_tagsOccurrences.containsKey(thought)) {
+          _tagsOccurrences.update(thought, (value) => value + 1);
+        } else {
+          _tagsOccurrences[thought] = 1;
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference thoughts = FirebaseFirestore.instance.collection("thoughts");
-    var userThoughts = thoughts
-        .where("user_id", isEqualTo: "test")
-        .get();
-    
-    return Positioned.fill(
-        child: Align(
-            alignment: Alignment.topCenter,
-            child: Column(children: [
-              const Text("What have you accomplished in the past",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              DropdownButton(
-                  value: _displayTime.name,
-                  style: const TextStyle(fontSize: 24, color: Colors.black),
-                  items: ChartDisplayDuration.values
-                      .map((e) => e.name)
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (Object? val) {
-                    setState(() {
-                      switch (val) {
-                        case "week":
-                          _displayTime = ChartDisplayDuration.week;
-                          break;
-                        case "month":
-                          _displayTime = ChartDisplayDuration.month;
-                          break;
-                        case "year":
-                          _displayTime = ChartDisplayDuration.year;
-                          break;
-                        case "life":
-                          _displayTime = ChartDisplayDuration.life;
-                          break;
-                      }
-                    });
-                  })
-            ])));
+    return FutureBuilder(
+        future: updateTagsOccurrences(),
+        builder: (context, snapshot) {
+          return Positioned.fill(
+              child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Column(children: [
+                    const Text("What have you accomplished in the past",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold)),
+                    DropdownButton(
+                        value: _displayTime.name,
+                        style:
+                            const TextStyle(fontSize: 24, color: Colors.black),
+                        items: ChartDisplayDuration.values
+                            .map((e) => e.name)
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (Object? val) {
+                          setState(() {
+                            switch (val) {
+                              case "week":
+                                _displayTime = ChartDisplayDuration.week;
+                                break;
+                              case "month":
+                                _displayTime = ChartDisplayDuration.month;
+                                break;
+                              case "year":
+                                _displayTime = ChartDisplayDuration.year;
+                                break;
+                              case "life":
+                                _displayTime = ChartDisplayDuration.life;
+                                break;
+                            }
+                          });
+                        }),
+                    _tagsOccurrences.isEmpty ? const SizedBox() : PieChart(dataMap: _tagsOccurrences)
+                  ])));
+        });
+  }
+}
+
+class Chart extends StatelessWidget {
+  Map<String, double> _tagsOccurrences;
+  
+  Chart(this._tagsOccurrences, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return PieChart(
+        dataMap: _tagsOccurrences
+    );
   }
 }
 
@@ -232,7 +262,6 @@ class AddEntryPage extends StatefulWidget {
 }
 
 class _AddEntryPage extends State<AddEntryPage> {
-
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
@@ -246,15 +275,12 @@ class _AddEntryPage extends State<AddEntryPage> {
               TextField(),
               TextField(),
               Text("What did you accomplish today?",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               TextField(),
               TextField(),
               TextField(),
-            ]
-            )
-        )
-    );
+            ])));
   }
 }
 
@@ -267,26 +293,27 @@ class AddCommunityPage extends StatefulWidget {
 }
 
 class _AddCommunityPage extends State<AddCommunityPage> {
-
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
         child: Align(
-            alignment: Alignment.topCenter,
-            child: Column(children: [
-              const Text("Welcome to the Community Page",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              const TextField(),
-              Container(
-                  padding: const EdgeInsets.only(top: 75, left: 25, right: 25),
-                  decoration: const BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage("assets/background.png"),
-                          fit: BoxFit.fill)),
-              ),],),
-        )
-    );
+      alignment: Alignment.topCenter,
+      child: Column(
+        children: [
+          const Text("Welcome to the Community Page",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const TextField(),
+          Container(
+            padding: const EdgeInsets.only(top: 75, left: 25, right: 25),
+            decoration: const BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("assets/background.png"),
+                    fit: BoxFit.fill)),
+          ),
+        ],
+      ),
+    ));
   }
 }
 
@@ -299,26 +326,27 @@ class AddSettingsPage extends StatefulWidget {
 }
 
 class _AddSettingsPage extends State<AddSettingsPage> {
-
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
         child: Align(
-          alignment: Alignment.topCenter,
-          child: Column(children: [
-            const Text("Settings",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            const TextField(),
-            Container(
-              padding: const EdgeInsets.only(top: 75, left: 25, right: 25),
-              decoration: const BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage("assets/settings_page.png"),
-                      fit: BoxFit.fill)),
-            ),],),
-        )
-    );
+      alignment: Alignment.topCenter,
+      child: Column(
+        children: [
+          const Text("Settings",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const TextField(),
+          Container(
+            padding: const EdgeInsets.only(top: 75, left: 25, right: 25),
+            decoration: const BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("assets/settings_page.png"),
+                    fit: BoxFit.fill)),
+          ),
+        ],
+      ),
+    ));
   }
 }
 
