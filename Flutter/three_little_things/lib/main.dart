@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
-
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -272,6 +270,9 @@ class _AnalyticsPage extends State<AnalyticsPage> {
                             legendOptions: const LegendOptions(
                                 legendPosition: LegendPosition.bottom,
                                 showLegendsInRow: true),
+                            chartValuesOptions: const ChartValuesOptions(
+                              decimalPlaces: 0
+                            ),
                           )
                   ])));
         });
@@ -326,10 +327,6 @@ class _AddCommunityPage extends State<AddCommunityPage> {
             alignment: Alignment.topCenter,
             child: Column(
               children: [
-                const Text("Welcome to the Community Page",
-                    textAlign: TextAlign.center,
-                    style:
-                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                 SizedBox(
                     child: Container(
                       decoration: const BoxDecoration(
@@ -338,7 +335,7 @@ class _AddCommunityPage extends State<AddCommunityPage> {
                               fit: BoxFit.fill)),
                     ),
                     width: 350,
-                    height: 550)
+                    height: 615)
               ],
             )));
   }
