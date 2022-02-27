@@ -1,14 +1,17 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
-class Pointer<T> {
-  T value;
-  Pointer(this.value);
+class FirebaseData {
+  CollectionReference<Map<String, dynamic>> thoughtCollection;
+  UserCredential userCredential;
+  
+  FirebaseData(this.thoughtCollection, this.userCredential);
 }
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -30,7 +33,56 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.lightGreen,
       ),
-      home: const AppLayout(),
+      home: const FirstRoute(),
+    );
+  }
+}
+
+class FirstRoute extends StatelessWidget {
+  const FirstRoute({Key? key}) : super(key: key);
+  
+  Future<FirebaseData> getData() async {
+    await Firebase.initializeApp();
+    
+    var googleUser = await GoogleSignIn().signIn();
+    var googleAuth = await googleUser?.authentication;
+    var credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken
+    );    
+    var userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+    
+    var thoughtCollection = FirebaseFirestore.instance.collection("thoughts");
+    
+    return FirebaseData(thoughtCollection, userCredential);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: getData(),
+        builder: (context, data) {
+          if (data.hasError) {
+            return Stack();
+          }
+
+          if (data.connectionState == ConnectionState.done) {
+            return const AppLayout();
+          }
+
+          return const Loading();
+        });
+  }
+}
+
+class Loading extends StatelessWidget {
+  const Loading({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: const [CircularProgressIndicator()],
     );
   }
 }
@@ -60,7 +112,7 @@ class _App extends State<AppLayout> {
       return Positioned.fill(child: Stack());
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +122,7 @@ class _App extends State<AppLayout> {
               image: DecorationImage(
                   image: AssetImage("assets/background.png"),
                   fit: BoxFit.fill)),
-          child: Stack(children: [ getPage() ])),
+          child: Stack(children: [getPage()])),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -80,11 +132,10 @@ class _App extends State<AppLayout> {
                   height: 100),
               label: "",
               activeIcon: SizedBox(
-                  child: Image(image: AssetImage('assets/community_selected.png')),
+                  child:
+                      Image(image: AssetImage('assets/analytics_selected.png')),
                   width: 100,
-                  height: 100
-              )
-          ),
+                  height: 100)),
           BottomNavigationBarItem(
               icon: SizedBox(
                   child: Image(image: AssetImage('assets/add.png')),
@@ -94,9 +145,7 @@ class _App extends State<AppLayout> {
               activeIcon: SizedBox(
                   child: Image(image: AssetImage('assets/add_selected.png')),
                   width: 100,
-                  height: 100
-              )
-          ),
+                  height: 100)),
           BottomNavigationBarItem(
               icon: SizedBox(
                   child: Image(image: AssetImage('assets/community.png')),
@@ -104,11 +153,10 @@ class _App extends State<AppLayout> {
                   height: 100),
               label: "",
               activeIcon: SizedBox(
-                child: Image(image: AssetImage('assets/community_selected.png')),
-                width: 100,
-                height: 100
-              )
-          ),
+                  child:
+                      Image(image: AssetImage('assets/community_selected.png')),
+                  width: 100,
+                  height: 100)),
           BottomNavigationBarItem(
               icon: SizedBox(
                   child: Image(image: AssetImage('assets/settings.png')),
@@ -116,11 +164,10 @@ class _App extends State<AppLayout> {
                   height: 100),
               label: "",
               activeIcon: SizedBox(
-                  child: Image(image: AssetImage('assets/settings_selected.png')),
+                  child:
+                      Image(image: AssetImage('assets/settings_selected.png')),
                   width: 100,
-                  height: 100
-              )
-          ),
+                  height: 100)),
         ],
         currentIndex: _selectedPage.index,
         onTap: _onItemTapped,
@@ -139,9 +186,9 @@ class AnalyticsPage extends StatefulWidget {
 
 enum ChartDisplayDuration { week, month, year, life }
 
-class _ChartPage extends State<AnalyticsPage> {  
+class _ChartPage extends State<AnalyticsPage> {
   ChartDisplayDuration _displayTime = ChartDisplayDuration.week;
-  
+
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
@@ -154,7 +201,8 @@ class _ChartPage extends State<AnalyticsPage> {
               DropdownButton(
                   value: _displayTime.name,
                   style: const TextStyle(fontSize: 24, color: Colors.black),
-                  items: ChartDisplayDuration.values.map((e) => e.name)
+                  items: ChartDisplayDuration.values
+                      .map((e) => e.name)
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
