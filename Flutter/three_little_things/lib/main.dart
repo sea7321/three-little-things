@@ -6,9 +6,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseData {
   CollectionReference<Map<String, dynamic>> thoughtCollection;
-  UserCredential userCredential;
+  String uuid;
   
-  FirebaseData(this.thoughtCollection, this.userCredential);
+  FirebaseData(this.thoughtCollection, this.uuid);
 }
 
 void main() => runApp(const MyApp());
@@ -42,8 +42,17 @@ class FirstRoute extends StatelessWidget {
   const FirstRoute({Key? key}) : super(key: key);
   
   Future<FirebaseData> getData() async {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(options: FirebaseOptions(
+      apiKey: "AIzaSyCqCZ4hj54UALwigomO-6LKJ4kS8ZxNuAg",
+      authDomain: "three-little-things.firebaseapp.com",
+      projectId: "three-little-things",
+      storageBucket: "three-little-things.appspot.com",
+      messagingSenderId: "312349347082",
+      appId: "1:312349347082:web:32f6eb7768dc2528ba7ef3",
+      measurementId: "G-W5FHGWVEC5"
+    ));
     
+    /*
     var googleUser = await GoogleSignIn().signIn();
     var googleAuth = await googleUser?.authentication;
     var credential = GoogleAuthProvider.credential(
@@ -51,10 +60,11 @@ class FirstRoute extends StatelessWidget {
       idToken: googleAuth?.idToken
     );    
     var userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+    */
     
     var thoughtCollection = FirebaseFirestore.instance.collection("thoughts");
     
-    return FirebaseData(thoughtCollection, userCredential);
+    return FirebaseData(thoughtCollection, "test");
   }
 
   @override
@@ -181,12 +191,12 @@ class AnalyticsPage extends StatefulWidget {
   const AnalyticsPage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ChartPage();
+  State<StatefulWidget> createState() => _AnalyticsPage();
 }
 
 enum ChartDisplayDuration { week, month, year, life }
 
-class _ChartPage extends State<AnalyticsPage> {
+class _AnalyticsPage extends State<AnalyticsPage> {
   ChartDisplayDuration _displayTime = ChartDisplayDuration.week;
 
   @override
