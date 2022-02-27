@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,15 +33,19 @@ class DayThoughts {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: const FirebaseOptions(
-    apiKey: "AIzaSyCqCZ4hj54UALwigomO-6LKJ4kS8ZxNuAg",
-    authDomain: "three-little-things.firebaseapp.com",
-    projectId: "three-little-things",
-    storageBucket: "three-little-things.appspot.com",
-    messagingSenderId: "312349347082",
-    appId: "1:312349347082:web:32f6eb7768dc2528ba7ef3",
-    measurementId: "G-W5FHGWVEC5"
-  ));
+  if (!Platform.isAndroid) {
+    await Firebase.initializeApp(options: const FirebaseOptions(
+        apiKey: "AIzaSyCqCZ4hj54UALwigomO-6LKJ4kS8ZxNuAg",
+        authDomain: "three-little-things.firebaseapp.com",
+        projectId: "three-little-things",
+        storageBucket: "three-little-things.appspot.com",
+        messagingSenderId: "312349347082",
+        appId: "1:312349347082:web:32f6eb7768dc2528ba7ef3",
+        measurementId: "G-W5FHGWVEC5"
+    ));
+  } else {
+    await Firebase.initializeApp();
+  }
   runApp(const MyApp());
 }
 
