@@ -9,7 +9,38 @@ class FirebaseData {
   FirebaseData(this.thoughtCollection, this.uuid);
 }
 
-void main() => runApp(const MyApp());
+class DayThoughts {
+  String userId;
+  List<String> tags;
+  
+  DayThoughts(this.userId, this.tags);  
+  
+  DayThoughts.fromJson(Map<String, Object?> json) : this(
+    json['userId']! as String,
+    json['tags']! as List<String>
+  );
+  
+  Map<String, Object?> toJson() {
+    return {
+      'userId': userId,
+      'tags': tags
+    };
+  }
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: const FirebaseOptions(
+    apiKey: "AIzaSyCqCZ4hj54UALwigomO-6LKJ4kS8ZxNuAg",
+    authDomain: "three-little-things.firebaseapp.com",
+    projectId: "three-little-things",
+    storageBucket: "three-little-things.appspot.com",
+    messagingSenderId: "312349347082",
+    appId: "1:312349347082:web:32f6eb7768dc2528ba7ef3",
+    measurementId: "G-W5FHGWVEC5"
+  ));
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -31,67 +62,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.lightGreen,
       ),
-      home: const FirstRoute(),
-    );
-  }
-}
-
-class FirstRoute extends StatelessWidget {
-  const FirstRoute({Key? key}) : super(key: key);
-  
-  Future<FirebaseData> getData() async {
-    await Firebase.initializeApp(options: const FirebaseOptions(
-      apiKey: "AIzaSyCqCZ4hj54UALwigomO-6LKJ4kS8ZxNuAg",
-      authDomain: "three-little-things.firebaseapp.com",
-      projectId: "three-little-things",
-      storageBucket: "three-little-things.appspot.com",
-      messagingSenderId: "312349347082",
-      appId: "1:312349347082:web:32f6eb7768dc2528ba7ef3",
-      measurementId: "G-W5FHGWVEC5"
-    ));
-    
-    /*
-    var googleUser = await GoogleSignIn().signIn();
-    var googleAuth = await googleUser?.authentication;
-    var credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken
-    );    
-    var userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-    */
-    
-    var thoughtCollection = FirebaseFirestore.instance.collection("thoughts");
-    
-    return FirebaseData(thoughtCollection, "test");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        // future: getData(),
-        future: Firebase.initializeApp(),
-    builder: (context, data) {
-          if (data.hasError) {
-            return Stack();
-          }
-
-          if (data.connectionState == ConnectionState.done) {
-            return const AppLayout();
-          }
-
-          return const Loading();
-        });
-  }
-}
-
-class Loading extends StatelessWidget {
-  const Loading({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: const [CircularProgressIndicator()],
+      home: const AppLayout(),
     );
   }
 }
@@ -99,6 +70,7 @@ class Loading extends StatelessWidget {
 enum Page { analytics, addEntry, community, settings }
 
 class AppLayout extends StatefulWidget {
+  
   const AppLayout({Key? key}) : super(key: key);
 
   @override
@@ -191,6 +163,7 @@ class _App extends State<AppLayout> {
 
 // ANALYTICS PAGE
 class AnalyticsPage extends StatefulWidget {
+  
   const AnalyticsPage({Key? key}) : super(key: key);
 
   @override
@@ -201,9 +174,15 @@ enum ChartDisplayDuration { week, month, year, life }
 
 class _AnalyticsPage extends State<AnalyticsPage> {
   ChartDisplayDuration _displayTime = ChartDisplayDuration.week;
+  final Map<String, int> _tagsOccurrences = {};
 
   @override
   Widget build(BuildContext context) {
+    CollectionReference thoughts = FirebaseFirestore.instance.collection("thoughts");
+    var userThoughts = thoughts
+        .where("user_id", isEqualTo: "test")
+        .get();
+    
     return Positioned.fill(
         child: Align(
             alignment: Alignment.topCenter,
